@@ -12,7 +12,7 @@ from distutils.file_util import move_file, copy_file
 
 _WORKSPACE = os.getcwd()
 _ROOT = r'T:\Systems\InternalTools\Docket'
-_EXCLUDED_DIRS = ['.vscode']
+_EXCLUDED_DIRS = ['.vscode', 'client/node_modules']
 _EXCLUDED_FILES = [os.path.basename(__file__)]
 _EXECUTABLE = 'docket.exe'
 
