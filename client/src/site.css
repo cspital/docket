@@ -1,0 +1,128 @@
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    to {
+        opacity: 0;
+    }
+}
+
+.fade-in {
+    opacity: 0;
+    animation: fadeIn .25s ease-in 1 forwards;
+}
+
+.fade-out {
+    opacity: 1;
+    animation: fadeOut .25s ease-in 1 forwards;
+}
+
+.card-wrapper {
+    -webkit-justify-content: space-around;
+    justify-content: space-around;
+}
+
+.card-info {
+    float: left;
+}
+
+.card-status {
+    float: right;
+    width: 25%;
+    height: 100%;
+}
+
+.status-pass {
+    background-color: #0F700F;
+}
+
+.status-fail {
+    background-color: #C41717;
+}
+
+.status-running {
+    background-color: #0230AF;
+}
+
+.card-status.status-fail:hover,.card-status.status-pass:hover {
+    cursor: pointer;
+    cursor: hand;
+}
+
+ul.none {
+    list-style-type: none;
+}
+
+.center-text {
+    text-align: center;
+}
+
+.job-status {
+    height: 130px;
+}
+
+.step-summary {
+    position: relative;
+}
+
+.step-message {
+    font-size: 13px;
+}
+
+.step-info {
+    width: 75%;
+    position: relative;
+}
+
+.step-status {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    margin: 8px;
+    padding-bottom: 8px;
+    width: 25%;
+}
+
+.schedule-entry {
+    display: inline-block;
+    width: 100%;
+}
+
+.schedule-name {
+    float: left;
+    font-size: 1em;
+    overflow-x: hidden;
+}
+
+.schedule-time {
+    float: right;
+}
+
+.card.large {
+    max-width: 600px;
+}
+
+.buffered-bottom {
+    margin-bottom: 2.75rem;
+}
+
+.card-shadow {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); 
+}
+
+header div a {
+    font-size: 1.1rem;
+}
+
+footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 2.75rem;
+    background: #12171a;
+    padding: 0rem 0rem 0rem;
+}

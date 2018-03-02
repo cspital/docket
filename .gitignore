@@ -1,0 +1,27 @@
+# editor settings
+.vscode/
+
+# executables
+*.exe
+run.bat
+
+# dependencies
+/client/node_modules
+
+# testing
+/client/coverage
+
+# production
+/client/build
+/server/static
+
+# misc
+/client/.DS_Store
+/client/.env.local
+/client/.env.development.local
+/client/.env.test.local
+/client/.env.production.local
+
+/client/npm-debug.log*
+/client/yarn-debug.log*
+/client/yarn-error.log*
