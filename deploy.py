@@ -9,10 +9,12 @@
 import os
 from distutils.dir_util import copy_tree, remove_tree
 from distutils.file_util import move_file, copy_file
+import shutil
+import time
 
 _WORKSPACE = os.getcwd()
 _ROOT = r'T:\Systems\InternalTools\Docket'
-_EXCLUDED_DIRS = ['.vscode', 'client/node_modules']
+_EXCLUDED_DIRS = ['.vscode', 'node_modules']
 _EXCLUDED_FILES = [os.path.basename(__file__)]
 _EXECUTABLE = 'docket.exe'
 
@@ -28,13 +30,12 @@ def get_version():
 
 def top_folder(root, version):
     trg = os.path.join(root, version)
-    if os.path.exists(trg):
+    if os.path.exists(trg) or os.path.exists(f'{trg}.zip'):
         raise Exception(f'{version} is already deployed, did you forget to increment the version file?')
     return trg
 
 def make_structure(vfolder):
     os.mkdir(vfolder)
-    os.mkdir(src_folder(vfolder))
     os.mkdir(bin_folder(vfolder))
 
 def exclude_dirs(trgdir, exs):
@@ -49,17 +50,14 @@ def exclude_files(trgdir, exs):
         os.remove(d)
         print(f'removed file {d}')
 
+def ignore(directory, files):
+    return [f for f in files if f in _EXCLUDED_FILES or f in _EXCLUDED_DIRS]
+
 def copy_source(trgdir, dry_run=0):
     print()
     print('---------------------------Copying---------------------------')
-    copied = copy_tree(_WORKSPACE, src_folder(trgdir), dry_run=dry_run)
+    copied = shutil.copytree(_WORKSPACE, src_folder(trgdir), ignore=ignore)
     print(f'{len(copied)} files copied to {src_folder(trgdir)}')
-
-def exclude(trgdir):
-    print()
-    print('---------------------------Excluding---------------------------')
-    exclude_dirs(trgdir, _EXCLUDED_DIRS)
-    exclude_files(trgdir, _EXCLUDED_FILES)
 
 def move_exe(trgdir):
     print()
@@ -83,8 +81,9 @@ def main():
         target = top_folder(_ROOT, version)
         make_structure(target)
         copy_source(target)
-        exclude(target)
         move_exe(target)
+        print()
+        print(f'Docket {version} deployed')
     except Exception as ex:
         print(f'could not deploy Docket {version}:')
         print(str(ex))
