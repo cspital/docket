@@ -3,7 +3,7 @@ import { Job } from '../model/job';
 import { ResultList } from './ResultList';
 
 interface HistoryProps {
-    results: Job[];
+    results: Map<string, Job>;
 }
 
 export const History: React.StatelessComponent<HistoryProps> = (props: HistoryProps) => (

@@ -1,50 +1,42 @@
 import * as React from 'react';
-import { Cache } from '../model/cache';
 import { Job } from '../model/job';
-import { fadeIn, fadeOut } from '../utils/effects';
 import { ResultCard } from './ResultCard';
 
 interface ResultListProps {
-    results: Job[];
+    results: Map<string, Job>;
 }
 
 interface ResultListState {
+    results: Job[];
     newResults: Job[];
 }
 
+function getAllJobs(m: Map<string, Job>): Job[] {
+    return Array.from(m.values())
+        .sort((a, b) => Number(b.runDate) - Number(a.runDate));
+}
+
+function getNewResults(prev: Map<string, Job>, next: Map<string, Job>): Job[] {
+    return Array.from(next.values())
+        .filter(j => j.statusGuid && !prev.has(j.statusGuid as string))
+        .sort((a, b) => Number(a.runDate) - Number(b.runDate));
+}
+
 export class ResultList extends React.Component<ResultListProps, ResultListState> {
-    private element: HTMLElement | null;
     constructor(props: ResultListProps) {
         super(props);
 
         this.state = {
+            results: [],
             newResults: []
         };
     }
 
-    getNewResults(jobs: Job[]): Job[] {
-        return jobs
-            .filter(j => j.statusGuid && !Cache.instances.has(j.statusGuid as string))
-            .sort((a, b) => Number(a.runDate) - Number(b.runDate));
-    }
-
     componentWillReceiveProps(nextProps: ResultListProps) {
-        const newResults = this.getNewResults(nextProps.results);
         this.setState({
-            newResults: newResults
+            results: getAllJobs(nextProps.results),
+            newResults: getNewResults(this.props.results, nextProps.results)
         });
-    }
-
-    async componentWillUpdate(nextProps: ResultListProps, nextState: ResultListState) {
-        if (nextState.newResults.length > 0 && this.element) {
-            await fadeOut(this.element);
-        }
-    }
-
-    async componentDidUpdate(prevProps: ResultListProps) {
-        if (this.state.newResults.length > 0 && this.element) {
-            await fadeIn(this.element);
-        }
     }
 
     render() {
@@ -52,9 +44,8 @@ export class ResultList extends React.Component<ResultListProps, ResultListState
             <div
                 id="history_list"
                 className="col-md-offset-2 col-lg-offset-3 row card-wrapper"
-                ref={ref => this.element = ref}
             >
-                {this.props.results.map((j, i) => <ResultCard key={i} job={j} />)}
+                {this.state.results.map((j) => <ResultCard key={j.statusGuid as string} job={j} />)}
             </div>
         );
     }

@@ -13,8 +13,6 @@ export interface CachePayload {
  * @implements ICache
  */
 export class Cache {
-    static instances = new Map<string, Job>();
-
     expires: Date;
     jobs: Job[];
     schedule: Job[];
@@ -44,11 +42,6 @@ export class Cache {
                     job.nextRunDate < later;
             })
             .sort((a, b) => Number(a.nextRunDate) - Number(b.nextRunDate));
-    }
-
-    getAllJobs(): Job[] {
-        return Array.from(Cache.instances.values())
-            .sort((a, b) => Number(b.runDate) - Number(a.runDate));
     }
 
     /**
@@ -84,7 +77,9 @@ export class Cache {
         tmp.setMilliseconds(tmp.getMilliseconds() + 500); // nudge it a smidge
 
         this.expires = tmp;
-        this.jobs = payload.jobs.map(j => new SQLJob(j));
+        this.jobs = payload.jobs
+            .map(j => new SQLJob(j))
+            .sort((a, b) => Number(a.runDate) - Number(b.runDate));
         this.schedule = Cache.makeSchedule(this.jobs);
     }
 }

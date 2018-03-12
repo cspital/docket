@@ -11,8 +11,15 @@ interface DocketProps {}
 
 interface DocketState {
     schedule: Job[];
-    results: Job[];
+    results: Map<string, Job>;
     timer?: NodeJS.Timer;
+}
+
+function dateIsRecent(d: Date | null): boolean {
+    if (d) {
+        return dateToMSInt(d) >= dateToMSInt(new Date()) - 1;
+    }
+    return false;
 }
 
 export class Docket extends React.Component<DocketProps, DocketState> {
@@ -20,39 +27,10 @@ export class Docket extends React.Component<DocketProps, DocketState> {
         super(props);
         this.state = {
             schedule: [],
-            results: []
+            results: new Map<string, Job>()
         };
 
-        this.getFirstCache = this.getFirstCache.bind(this);
         this.refresh = this.refresh.bind(this);
-    }
-
-    async getFirstCache() {
-        // bootstrap the application state
-        const initial = getJobsSince(dateToMSInt(new Date()));
-        const payload = await getJobs();
-        const cache = Cache.New(payload);
-        const initialJobs = await initial;
-
-        // enrich initial with current average run duration from cache.
-        for (let j of initialJobs) {
-            const cached = cache.findJobById(j.id);
-            if (cached) {
-                j.avgRunDuration = cached.avgRunDuration;
-                Cache.instances.set(j.statusGuid as string, j);
-            }
-        }
-
-        return cache;
-    }
-
-    updateCache(nextCache: Cache) {
-        for (let job of nextCache.jobs) {
-            const old = Cache.instances.get(job.statusGuid as string);
-            if (old && old.runResult !== job.runResult) {
-                Cache.instances.set(old.statusGuid as string, job);
-            }
-        }
     }
 
     async refresh() {
@@ -62,24 +40,62 @@ export class Docket extends React.Component<DocketProps, DocketState> {
         const payload = await jobTask;
 
         const nextCache = Cache.New(payload);
-        this.updateCache(nextCache);
+        const results = new Map<string, Job>(this.state.results);
+
+        for (let job of nextCache.jobs) {
+            const old = results.get(job.statusGuid as string);
+            if (old && old.runResult === job.runResult) {
+                continue;
+            }
+
+            if (!dateIsRecent(job.runDate)) {
+                continue;
+            }
+
+            results.set(job.statusGuid as string, job);
+        }
+
         const nextUpdate = Number(nextCache.expires);
         const refreshTimer = setTimeout(this.refresh, nextUpdate - Number(new Date()));
         
         this.setState({
             schedule: nextCache.schedule,
-            results: nextCache.getAllJobs(),
+            results: results,
             timer: refreshTimer
         });
     }
 
     async componentWillMount() {
-        const cache = await this.getFirstCache();
+        // bootstrap the application state
+        const initial = getJobsSince(dateToMSInt(new Date()));
+        const payload = await getJobs();
+        const cache = Cache.New(payload);
+        const initialJobs = await initial;
+        const results = new Map<string, Job>();
+
+        // enrich initial with current average run duration from cache.
+        for (let j of initialJobs) {
+            const cached = cache.findJobById(j.id);
+            if (cached) {
+                j.avgRunDuration = cached.avgRunDuration;
+            }
+            results.set(j.statusGuid as string, j);
+        }
+
+        // capture running jobs
+        for (let j of cache.jobs) {
+            if (j.statusGuid) {
+                if (j.isRunning || dateIsRecent(j.runDate)) {
+                    results.set(j.statusGuid, j);
+                }
+            }
+        }
+        
         const nextUpdate = Number(cache.expires);
         const refreshTimer = setTimeout(this.refresh, nextUpdate - Number(new Date()));
         this.setState({
             schedule: cache.schedule,
-            results: cache.getAllJobs(),
+            results: results,
             timer: refreshTimer
         });
         requestNotify();

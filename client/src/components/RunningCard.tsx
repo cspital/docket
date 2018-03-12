@@ -10,7 +10,7 @@ interface RunningCardProps {
 export const RunningCard: React.StatelessComponent<RunningCardProps> = (props: RunningCardProps) => (
     <div className="section job-status">
         <span className="card-info">
-            <h5 className="section">{props.job.name}</h5>
+            <h5 className="section"><b>{props.job.name}</b></h5>
             <h6>{dateToString(props.job.runDate as Date)}</h6>
         </span>
         <span className={`card-status ${getStatus(props.job.runResult)}`} />
