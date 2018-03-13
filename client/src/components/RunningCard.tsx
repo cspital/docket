@@ -11,7 +11,7 @@ export const RunningCard: React.StatelessComponent<RunningCardProps> = (props: R
     <div className="section job-status">
         <span className="card-info">
             <h5 className="section"><b>{props.job.name}</b></h5>
-            <h6>{dateToString(props.job.runDate as Date)}</h6>
+            <h6>Ran: {dateToString(props.job.runDate as Date)}</h6>
         </span>
         <span className={`card-status ${getStatus(props.job.runResult)}`} />
     </div>

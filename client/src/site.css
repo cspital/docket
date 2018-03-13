@@ -1,3 +1,12 @@
+@keyframes fade {
+    100% { opacity: 1; }
+    0% { opacity: 0; }
+}
+
+.fade {
+    animation: fade .25s linear;
+}
+
 .card-wrapper {
     -webkit-justify-content: space-around;
     justify-content: space-around;

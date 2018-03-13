@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Job } from '../model/job';
 import { ResultCard } from './ResultCard';
+import AnimateOnChange from 'react-animate-on-change';
 
 interface ResultListProps {
     results: Map<string, Job>;
@@ -9,6 +10,7 @@ interface ResultListProps {
 interface ResultListState {
     results: Job[];
     newResults: Job[];
+    shouldUpdate: boolean;
 }
 
 function getAllJobs(m: Map<string, Job>): Job[] {
@@ -28,25 +30,35 @@ export class ResultList extends React.Component<ResultListProps, ResultListState
 
         this.state = {
             results: [],
-            newResults: []
+            newResults: [],
+            shouldUpdate: false
         };
     }
 
     componentWillReceiveProps(nextProps: ResultListProps) {
+        const newres = getNewResults(this.props.results, nextProps.results);
         this.setState({
             results: getAllJobs(nextProps.results),
-            newResults: getNewResults(this.props.results, nextProps.results)
+            newResults: newres,
+            shouldUpdate: newres.length > 0
         });
     }
 
     render() {
         return (
-            <div
-                id="history_list"
-                className="col-md-offset-2 col-lg-offset-3 row card-wrapper"
+            <AnimateOnChange
+                baseClassName="col-md-offset-2 col-lg-offset-3"
+                animationClassName="fade"
+                animate={this.state.shouldUpdate}
             >
-                {this.state.results.map((j) => <ResultCard key={j.statusGuid as string} job={j} />)}
-            </div>
+                <div
+                    id="history_list"
+                    className="row card-wrapper"
+                >
+                    {this.state.results.map((j) => <ResultCard key={j.statusGuid as string} job={j} />)}
+                </div>
+            </AnimateOnChange>
+            
         );
     }
 }

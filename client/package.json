@@ -5,6 +5,7 @@
   "dependencies": {
     "@types/react-modal": "^3.1.2",
     "react": "^16.2.0",
+    "react-animate-on-change": "^1.0.1",
     "react-dom": "^16.2.0",
     "react-modal": "^3.3.1",
     "react-scripts-ts": "2.13.0"
