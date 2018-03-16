@@ -39,13 +39,10 @@ func (j *JobController) All(w http.ResponseWriter, r *http.Request) {
 		Jobs:    jobs,
 	}
 
-	data, err := json.Marshal(&payload)
-	if err != nil {
-		failWith(w, http.StatusInternalServerError, "could not serialize jobs", err)
-		return
-	}
 	apiHeaders(w.Header())
-	w.Write(data)
+	if err := json.NewEncoder(w).Encode(&payload); err != nil {
+		failWith(w, http.StatusInternalServerError, "could not serialize jobs", err)
+	}
 }
 
 // Since ...
@@ -64,13 +61,11 @@ func (j *JobController) Since(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload := NewOutcomePayload(outcomes)
-	data, err := json.Marshal(&payload)
-	if err != nil {
-		failWith(w, http.StatusInternalServerError, "could not serialize outcomes", err)
-		return
-	}
+
 	apiHeaders(w.Header())
-	w.Write(data)
+	if err := json.NewEncoder(w).Encode(&payload); err != nil {
+		failWith(w, http.StatusInternalServerError, "could not serialize outcomes", err)
+	}
 }
 
 // Detail ...
@@ -102,11 +97,9 @@ func (j *JobController) Detail(w http.ResponseWriter, r *http.Request) {
 	}
 
 	payload := NewOutcomePayload(outcomes)
-	data, err := json.Marshal(&payload)
-	if err != nil {
-		failWith(w, http.StatusInternalServerError, "could not serialize outcome", err)
-		return
-	}
+
 	apiHeaders(w.Header())
-	w.Write(data)
+	if err := json.NewEncoder(w).Encode(&payload); err != nil {
+		failWith(w, http.StatusInternalServerError, "could not serialize outcome", err)
+	}
 }
