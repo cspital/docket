@@ -17,7 +17,7 @@ docket.exe -db _server_ -r _optional sql regex_
 * r = optional sql regex (e.g. SSIS-%) (default. %)
 
 Dependencies:
-* go get github.com/BiffJutsu/go-bindata -- was github.com/jteeuwen/go-bindata but it disappeared
+* go get github.com/cspital/go-bindata -- was github.com/jteeuwen/go-bindata but it disappeared
 
 To build:
 * bump version
